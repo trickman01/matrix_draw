@@ -1,4 +1,5 @@
 import pygame as pg
+pg.init()
 
 class Pixel:
     def __init__(self, pos: tuple, surf_true: pg.Surface, surf_false: pg.Surface):
@@ -18,7 +19,7 @@ class Pixel:
         else:
             self.disp_surf = self.false_surf
 
-def get_values(pixels: list):
+def get_values(pixels: list):                   #outputs string in format "const uint32_t frame[] = {0x8ffc7fe3, 0xff1ff8ff, 0xc7fe3ff1};" to use in Arduino Sketch.  Change variable name if needed
     values = []
     for pixel in pixels:
         if pixel.state:
@@ -33,7 +34,7 @@ def get_values(pixels: list):
     one_hex = hex(int(''.join(one), 2))
     two_hex = hex(int(''.join(two), 2))
     three_hex = hex(int(''.join(three), 2))
-    output = f'{one_hex}, {two_hex}, {three_hex}'
+    output = f'const uint32_t frame[] = {{{one_hex}, {two_hex}, {three_hex}}};'
     print(output)
 
 if __name__ == '__main__':
@@ -78,30 +79,34 @@ if __name__ == '__main__':
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if event.type == pg.MOUSEBUTTONDOWN:
-                clicked = True
-            if event.type == pg.KEYDOWN:
-                update = True
-                if event.key == pg.K_SPACE:
-                    get_values(pixels)
-                if event.key == pg.K_r:
-                    for p in pixels:
-                        p.state = False
-                        p.disp_surf = p.false_surf
-                if event.key == pg.K_s:
-                    pg.image.save(screen, 'screen_capture.png')
+            if running:
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    clicked = True
+                if event.type == pg.KEYDOWN:
+                    update = True
+                    if event.key == pg.K_SPACE:
+                        get_values(pixels)
+                    if event.key == pg.K_r:
+                        for p in pixels:
+                            p.state = False
+                            p.disp_surf = p.false_surf
+                    if event.key == pg.K_s:
+                        pg.image.save(screen, 'screen_capture.png')
 
-        if clicked:
-            clicked = False
-            mouse_x, mouse_y = pg.mouse.get_pos()
-            screen.fill('black')
-            for pixel in pixels:
-                pixel.toggle_pixel(mouse_x, mouse_y)
-                screen.blit(pixel.disp_surf, pixel.rect)
-            pg.display.flip()
-        
-        if update:
-            screen.fill('black')
-            for pixel in pixels:
-                screen.blit(pixel.disp_surf, pixel.rect)
-            pg.display.flip()
+        if running:
+            if clicked:
+                clicked = False
+                mouse_x, mouse_y = pg.mouse.get_pos()
+                screen.fill('black')
+                for pixel in pixels:
+                    pixel.toggle_pixel(mouse_x, mouse_y)
+                    screen.blit(pixel.disp_surf, pixel.rect)
+                pg.display.flip()
+            
+            if update:
+                screen.fill('black')
+                for pixel in pixels:
+                    screen.blit(pixel.disp_surf, pixel.rect)
+                pg.display.flip()
+
+    pg.quit()
