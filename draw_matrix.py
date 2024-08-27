@@ -39,7 +39,6 @@ def get_values(pixels: list):                   #outputs string in format "const
 
 if __name__ == '__main__':
 
-    matrix = [0] * 96
     mWidth = 12
     mHeight = 8
     radius = 15
