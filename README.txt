@@ -1,0 +1,1 @@
+This program is used to design a 12x8 LED array for the Arduino Uno W4 and convert it to hex numbers to use with sketches.
